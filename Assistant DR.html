@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BADR - Assistant PV Routier</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #111c32;
+      --panel2: #16243f;
+      --text: #eef4ff;
+      --muted: #a8b3c7;
+      --accent: #4da3ff;
+      --accent2: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: rgba(255,255,255,.12);
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(77,163,255,.22), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,.12), transparent 30%),
+        var(--bg);
+    }
+
+    header {
+      padding: 26px 26px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), #173b7a);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: .2px;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button, .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: white;
+      background: var(--panel2);
+      cursor: pointer;
+      font-weight: 700;
+      transition: .15s ease;
+      border: 1px solid var(--border);
+    }
+
+    button:hover, .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.26);
+    }
+
+    .primary { background: linear-gradient(135deg, var(--accent), #2563eb); }
+    .success { background: linear-gradient(135deg, var(--accent2), #15803d); }
+    .danger { background: linear-gradient(135deg, var(--danger), #991b1b); }
+    .warning { background: linear-gradient(135deg, var(--warning), #b45309); }
+
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 12px 26px 40px;
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+    }
+
+    nav {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      background: rgba(17,28,50,.78);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .tab {
+      width: 100%;
+      text-align: left;
+      margin: 4px 0;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+    }
+
+    .tab.active {
+      color: var(--text);
+      background: rgba(77,163,255,.14);
+      border-color: rgba(77,163,255,.35);
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .page {
+      display: none;
+      animation: fade .18s ease;
+    }
+
+    .page.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: .65; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(17,28,50,.84);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      margin-bottom: 18px;
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: .88rem;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    select option {
+      background: #ffffff;
+      color: #111827;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      font: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(77,163,255,.75);
+      box-shadow: 0 0 0 4px rgba(77,163,255,.12);
+    }
+
+    textarea {
+      min-height: 190px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    .checkline input {
+      width: auto;
+      accent-color: #4da3ff;
+    }
+
+    .checkline span {
+      color: var(--text);
+      font-weight: 650;
+      font-size: .92rem;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .pv-output {
+      min-height: 480px;
+      white-space: pre-wrap;
+      font-family: var(--mono);
+      font-size: .9rem;
+      line-height: 1.5;
+      background: #f8fafc;
+      color: #111827;
+      border-radius: 14px;
+      padding: 18px;
+      border: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(77,163,255,.14);
+      border: 1px solid rgba(77,163,255,.24);
+      color: #d9ecff;
+      font-size: .82rem;
+      font-weight: 700;
+      margin: 3px;
+    }
+
+    .template-box {
+      font-family: var(--mono);
+      min-height: 260px;
+    }
+
+    details {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+      margin-bottom: 12px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .small {
+      font-size: .82rem;
+    }
+
+    footer {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 26px 34px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      nav { position: static; }
+      .grid, .grid3, .facts { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+      .top-actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">PV</div>
+      <div>
+        <h1>Assistant BADR — PV délits routiers</h1>
+        <div class="subtitle">Saisie unique → notification droits, audition libre, avis magistrat.</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="success" onclick="saveCase()">Sauvegarder</button>
+      <button onclick="loadCase()">Charger</button>
+      <button class="danger" onclick="resetAll()">Réinitialiser</button>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <button class="tab active" data-page="saisie">1. Saisie procédure</button>
+      <button class="tab" data-page="droits">2. Notification droits</button>
+      <button class="tab" data-page="audition">3. Audition libre</button>
+      <button class="tab" data-page="ttr">4. Mail Avis parquet</button>
+      <button class="tab" data-page="modeles">5. Modèles</button>
+    </nav>
+
+    <section class="content">
+      <section id="saisie" class="page active">
+        <div class="card">
+          <h2>Saisie principale</h2>
+          <p class="muted">Rentre les informations une seule fois. Les PV se remplissent automatiquement ensuite.</p>
+
+          <div class="grid3">
+            <div>
+              <label>Date des faits</label>
+              <input id="dateFaits" type="date" />
+            </div>
+            <div>
+              <label>Heure des faits</label>
+              <input id="heureFaits" type="time" />
+            </div>
+            <div>
+              <label>Service / Unité</label>
+              <input id="service" placeholder="BADR / service enquêteur" />
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <label>Numéro de procédure</label>
+            <input id="numeroProcedure" placeholder="Ex : 2026/000000" />
+          </div>
+
+          <div class="grid" style="margin-top:14px">
+            <div>
+              <label>Adresse précise des faits</label>
+              <input id="adresseFaits" placeholder="Ex : avenue Jean Jaurès" />
+            </div>
+            <div>
+              <label>Ville / arrondissement pour le PV</label>
+              <input id="villeFaits" placeholder="Ex : Marseille 8ème arrondissement" />
+            </div>
+          </div>
+
+          <h3 style="margin-top:22px">Faits retenus dans la procédure</h3>
+          <div class="facts" id="factsBox"></div>
+
+          <div id="usageStupsDetails" class="card" style="display:none; margin-top:16px; background:rgba(255,255,255,.045); box-shadow:none;">
+            <h3 style="margin-top:0">Détails usage de produits stupéfiants</h3>
+            <div class="grid3">
+              <div>
+                <label>Matière</label>
+                <select id="matiereStups">
+                  <option value="">À sélectionner</option>
+                  <option value="résine de cannabis">Résine de cannabis</option>
+                  <option value="herbe de cannabis">Herbe de cannabis</option>
+                  <option value="cocaïne">Cocaïne</option>
+                </select>
+              </div>
+              <div>
+                <label>Contenant</label>
+                <select id="contenantStups">
+                  <option value="">À sélectionner</option>
+                  <option value="bonbonne">Bonbonne</option>
+                  <option value="tube cylindrique">Tube cylindrique</option>
+                  <option value="sachet ziplock">Sachet ziplock</option>
+                  <option value="capsule">Capsule</option>
+                  <option value="joint">Joint</option>
+                </select>
+              </div>
+              <div>
+                <label>Quantité</label>
+                <input id="quantiteStups" placeholder="Ex : 2 grammes, 1 joint, 1 capsule" />
+              </div>
+            </div>
+          </div>
+
+          <div id="cepsDetails" class="card" style="display:none; margin-top:16px; background:rgba(255,255,255,.045); box-shadow:none;">
+            <h3 style="margin-top:0">Détails CEPS - Rapport SNPS Marseille</h3>
+            <p class="muted">Coche les substances positives au rapport SNPS.</p>
+            <div class="facts">
+              <label class="checkline"><input type="checkbox" id="snps_9_thc" class="snps" value="9-THC" data-famille="du cannabis"><span>9-THC</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_morphine" class="snps" value="morphine" data-famille="des opiacés"><span>Morphine</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_6_mam" class="snps" value="6-MAM" data-famille="des opiacés"><span>6-MAM</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_cocaine" class="snps" value="cocaïne" data-famille="des cocaïniques"><span>Cocaïne</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_benzoylecgonine" class="snps" value="benzoylecgonine" data-famille="des cocaïniques"><span>Benzoylecgonine</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_amphetamine" class="snps" value="amphétamine" data-famille="des amphétaminiques"><span>Amphétamine</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_methamphetamine" class="snps" value="méthamphétamine" data-famille="des amphétaminiques"><span>Méthamphétamine</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_mdma" class="snps" value="MDMA" data-famille="des amphétaminiques"><span>MDMA</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_mda" class="snps" value="MDA" data-famille="des amphétaminiques"><span>MDA</span></label>
+              <label class="checkline"><input type="checkbox" id="snps_mdea" class="snps" value="MDEA" data-famille="des amphétaminiques"><span>MDEA</span></label>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px; background:rgba(255,255,255,.045); box-shadow:none;">
+            <h3 style="margin-top:0">Suspension administrative préfectorale</h3>
+            <label class="checkline">
+              <input type="checkbox" id="suspensionAdministrative" onchange="toggleSuspensionAdministrativeDetails();">
+              <span>Le préfet de police des Bouches-du-Rhône a décidé d'une suspension administrative</span>
+            </label>
+            <div id="suspensionAdministrativeDetails" style="display:none; margin-top:14px;">
+              <label>Nombre de mois de suspension décidé</label>
+              <input id="moisSuspensionAdministrative" type="number" min="1" max="36" placeholder="Ex : 6" />
+            </div>
+          </div>
+
+          <div id="alcoolDetails" class="card" style="display:none; margin-top:16px; background:rgba(255,255,255,.045); box-shadow:none;">
+            <h3 style="margin-top:0">Détails CEEA</h3>
+            <div class="grid">
+              <div>
+                <label>Taux d'alcoolémie en mg/l d'air expiré</label>
+                <input id="tauxAlcool" placeholder="Ex : 0,42" />
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top:22px">Identité du mis en cause</h3>
+          <div class="grid">
+            <div>
+              <label>Sexe</label>
+              <select id="sexe">
+                <option value="M">Masculin</option>
+                <option value="F">Féminin</option>
+              </select>
+            </div>
+            <div>
+              <label>Nom</label>
+              <input id="nom" placeholder="DUPONT" />
+            </div>
+            <div>
+              <label>Prénom</label>
+              <input id="prenom" placeholder="Jean" />
+            </div>
+            <div>
+              <label>Date de naissance</label>
+              <input id="dateNaissance" type="date" />
+            </div>
+            <div>
+              <label>Lieu de naissance</label>
+              <input id="lieuNaissance" placeholder="Marseille (13)" />
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <label>Adresse du mis en cause</label>
+            <input id="adresseMec" placeholder="Adresse complète" />
+          </div>
+
+          <h3 style="margin-top:22px">Infos audition</h3>
+          <div class="grid3">
+            <div>
+              <label>Date convocation</label>
+              <input id="dateAudition" type="date" />
+            </div>
+            <div>
+              <label>Heure convocation</label>
+              <input id="heureAudition" type="time" />
+            </div>
+            <div>
+              <label>Lieu convocation</label>
+              <input id="lieuAudition" placeholder="Locaux du service" />
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <label>Observations / éléments utiles</label>
+            <textarea id="observations" placeholder="Ex : dépistage salivaire positif, taux alcoolémie, permis suspendu par décision..., véhicule..., etc."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section id="droits" class="page">
+        <div class="card">
+          <h2>Notification des droits en audition libre</h2>
+          <div id="resumeDroits"></div>
+          <div class="actions">
+            <button class="primary" onclick="generateDroits()">Générer</button>
+            <button onclick="copyText('outDroits')">Copier</button>
+            <button onclick="downloadTxt('outDroits','notification_droits_audition_libre.txt')">Exporter TXT</button>
+          </div>
+          <div id="outDroits" class="pv-output"></div>
+        </div>
+      </section>
+
+      <section id="audition" class="page">
+        <div class="card">
+          <h2>Audition libre</h2>
+          <p class="muted">Les infractions cochées en page 1 sont proposées ici. Tu peux choisir celles sur lesquelles tu entends réellement la personne.</p>
+          <div id="auditionFacts"></div>
+
+          <div class="actions">
+            <button class="primary" onclick="generateAudition()">Générer</button>
+            <button onclick="copyText('outAudition')">Copier</button>
+            <button onclick="downloadTxt('outAudition','audition_libre.txt')">Exporter TXT</button>
+          </div>
+          <div id="outAudition" class="pv-output"></div>
+        </div>
+      </section>
+
+      <section id="ttr" class="page">
+        <div class="card">
+          <h2>Mail Avis parquet</h2>
+          <p class="muted">Génère uniquement le mail d'envoi. L'avis TTR reste fait à la main.</p>
+
+          <div class="actions">
+            <button class="primary" onclick="generateTtr()">Générer</button>
+            <button onclick="copyText('outTtr')">Copier</button>
+            <button onclick="downloadTxt('outTtr','mail_avis_parquet.txt')">Exporter TXT</button>
+          </div>
+          <div id="outTtr" class="pv-output"></div>
+        </div>
+      </section>
+
+      <section id="modeles" class="page">
+        <div class="card">
+          <h2>Modèles modifiables</h2>
+          <p class="muted">Tu pourras remplacer ces textes par tes vrais modèles. Les variables entre doubles accolades sont remplacées automatiquement.</p>
+
+          <details open>
+            <summary>Notification des droits</summary>
+            <textarea id="tplDroits" class="template-box"></textarea>
+          </details>
+
+          <details>
+            <summary>Audition libre - tronc commun</summary>
+            <textarea id="tplAudition" class="template-box"></textarea>
+          </details>
+
+          <details>
+            <summary>Avis TTR Mail</summary>
+            <textarea id="tplTtr" class="template-box"></textarea>
+          </details>
+
+          <details>
+            <summary>Blocs par infraction</summary>
+            <div id="infractionTemplates"></div>
+          </details>
+
+          <div class="actions">
+            <button class="success" onclick="saveTemplates()">Sauvegarder les modèles</button>
+            <button class="warning" onclick="restoreDefaultTemplates()">Restaurer modèles provisoires</button>
+          </div>
+
+          <p class="muted small">
+            Variables disponibles : {{date_faits}}, {{heure_faits}}, {{adresse_faits}}, {{ville_faits}}, {{infractions_virgules}}, {{nom}}, {{prenom}}, {{date_naissance}}, {{lieu_naissance}}, {{adresse_mec}}, {{identite_complete}}, {{faits_liste}}, {{faits_audition}}, {{date_audition}}, {{heure_audition}}, {{lieu_audition}}, {{observations}}, {{service}}, {{dest_ttr}}, {{objet_ttr}}, {{blocs_audition}}, {{accord_e}}, {{lui_elle_meme}}, {{monsieur_madame}}, {{heure_signature}}, {{matiere_stups}}, {{contenant_stups}}, {{quantite_stups}}, {{snps_positifs}}, {{snps_familles}}, {{mois_suspension_administrative}}, {{date_jour}}, {{date_fin_suspension_administrative}}, {{faits_audition_virgules}}, {{bloc_fin_audition}}, {{filiation}}, {{profession_revenus}}, {{statut_permis}}, {{heure_convocation}}, {{proprietaire_vehicule}}, {{vehicule_infos}}, {{delits_ttr}}, {{motifs_controle}}, {{elements_infraction}}, {{reconnaissance_faits}}, {{contestation_elements}}, {{prejudice}}, {{indemnisation}}, {{antecedents}}, {{autres_infos}}.
+          </p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    Outil local de rédaction. Les modèles doivent être validés avec tes canevas de service avant usage opérationnel.
+  </footer>
+
+<script>
+const FACTS = [
+  { id: "csp", label: "Conduite sans permis" },
+  { id: "csusp", label: "Conduite malgré suspension de permis" },
+  { id: "cannul", label: "Conduite malgré annulation de permis" },
+  { id: "assurance", label: "Conduite sans assurance" },
+  { id: "stups", label: "Conduite sous l'emprise de produits stupéfiants" },
+  { id: "usage_stups", label: "Usage de produits stupéfiants" },
+  { id: "alcool", label: "Conduite sous l'empire d'un état alcoolique" },
+  { id: "refus", label: "Refus d'obtempérer" }
+];
+
+const DEFAULT_TEMPLATES = {
+  droits:
+`---Vu l'article 61-1 du Code de procédure pénale, ----
+---Vu l’article 706-112-2 du code de procédure pénale,---
+---Faisons comparaître devant Nous, le nommé, ---
+---{{identite_complete}}---
+--- Qui déclare comme suit : ---
+---« Vous m’informez de la qualification, de la date et du lieu présumé de l’infraction que je suis soupçonné{{accord_e}} d’avoir commis ou tenté de commettre, en l’espèce {{infractions_virgules}} (crime ou délit puni d’emprisonnement) commis à {{ville_faits}}, le {{date_faits}} à {{heure_faits}}----
+---Vous m’informez que dans le cadre de cette enquête, je vais être entendu{{accord_e}} librement sur ces faits », ---
+---« Je prends acte que j’ai le droit : ---
+---de quitter à tout moment les locaux où je suis entendu{{accord_e}}, ---
+---d'être assisté{{accord_e}}, le cas échéant, par un interprète,---
+---lors de mes auditions, après avoir décliné mon identité, de faire des déclarations, de répondre aux questions qui me sont posées ou de me taire, ---
+--- d’être assisté{{accord_e}} par un avocat dès le début de cette procédure ou à tout moment au cours de son déroulement. Il peut s’agir d’un avocat de mon choix, ou à ma demande, d’un avocat désigné d’office par le bâtonnier de l’ordre des avocats. Ce droit comprend la possibilité de m’entretenir au préalable avec lui durant un temps suffisant, de bénéficier de son assistance lors de mes auditions et confrontations ainsi que, le cas échéant, au cours d’opérations de reconstitution de l’infraction et de séances d’identification de suspects auxquelles je pourrais être amené{{accord_e}} à participer. ---
+---Vous m’informez que les frais d’avocat seront à ma charge sauf si je remplis les conditions d'accès à l'aide juridictionnelle qui me sont rappelées dans la notice d'information relative à l'aide juridictionnelle et à l'accès au droit qui m'est remise,---
+--- de consulter, à ma demande ou celle de mon avocat,  les procès-verbaux de mes auditions et confrontations, ou leur copie.---
+---d’accepter expressément d'être entendu{{accord_e}} hors la présence d’un avocat, ---
+---de bénéficier, le cas échéant gratuitement, de conseils juridiques dans une structure d'accès au droit." ---
+---Vous m’informez qu’en tant que bénéficiaire d’une mesure de protection juridique, mon tuteur ou curateur ou mandataire spécial va être avisé.---
+---"Pour le moment je ne désire pas bénéficier de l'assistance d'un avocat." ---
+---« Je prends acte que je peux revenir sur ma décision et demander l’assistance d’un avocat à tout moment au cours de cette procédure. »---
+---"Je prends acte des dispositions du dernier alinéa de l'article préliminaire du Code de procédure pénale en vertu desquelles, en matière criminelle ou correctionnelle, aucune condamnation ne peut être prononcée contre une personne sur le seul fondement des déclarations qu'elle a faites sans avoir pu s'entretenir avec un avocat et être assistée par lui". ---
+---Après lecture faite par {{lui_elle_meme}}, {{monsieur_madame}} {{nom}} persiste et signe avec nous le présent à {{heure_signature}}.---`,
+
+  audition:
+`---Vu l'article 61-1 du code de procédure pénale,---
+---Mettons en notre la personne ci dessous dénommée qui nous déclare:---
+---F3 GRANDE IDENTITE---
+---Entendons la personne ci dessus qui nous déclare:---
+---Je consens à être entendu{{accord_e}} hors la présence d'un avocat,---
+---Je consens à m'expliquer sur les faits qui me sont reprochés et pour lesquels vous m'avez notifié sur procès verbal distinct la nature des faits reprochés, la date et le lieu de commission des faits,---
+---QUESTION: "Avez vous bien compris le motif de votre présence devant nous ?"---
+---REPONSE:"J'ai bien compris le motif de ma présence devant vous."---
+---SUR LES FAITS:---
+---QUESTION: "Pouvez vous m'expliquer le motif de votre interpellation en date du {{date_faits}} à {{ville_faits}}."---
+---REPONSE:""---
+
+{{blocs_audition}}
+
+{{bloc_fin_audition}}`,
+
+  fin_audition:
+`---QUESTION: "Reconnaissez-vous les faits qui vous sont reprochés, à savoir les faits de {{faits_audition_virgules}} ?"---
+---REPONSE: ""---
+---QUESTION : « Avez-vous quelque chose à ajouter ? »---
+---REPONSE: ""---
+---Après lecture faite par {{lui_elle_meme}}, {{monsieur_madame}} {{nom}} persiste et signe avec nous le présent procès verbal, il est . ---
+LE DECLARANT                         L'A.P.J.`,
+
+  suspension_administrative:
+`---SUR LA SUSPENSION DU PERMIS DE CONDUIRE:---
+---Le prefet de police des Bouches du Rhone a pris à votre encontre un arrêté de suspension administratif de votre permis de conduire.---
+---La durée de suspension de votre permis de conduire est de {{mois_suspension_administrative}} mois à compter la notification de ce présent arrêté à savoir ce jour le {{date_jour}},---
+---Je prends acte que je n'ai plus le droit de conduire quelconque véhicule terrestre à moteur ,nécéssitant un permis de conduire à compter de ce jour.---
+---Que je pourrai de nouveau prétendre à conduire un véhicule nécéssitant un permis de conduire à compter du {{date_fin_suspension_administrative}} à condition d'avoir au préalable satisfait aux examens prescrit par la prefecture de police.---
+---Je prends acte que vous me remettez un exemplaire en mains propres du présent arrêté de notification de suspension du permis de conduire.---
+---Je m'engage à ne plus conduire de véhicule terrestre à moteur nécéssitant un permis de conduire tant que je n'aurai pas satisfait à tous les examens qui me seront demandé par la prefecture de police.---`,
+
+  ttr:
+`Objet : Avis TTR - {{infractions_virgules}} - {{nom}} {{prenom}}
+
+Madame, Monsieur,
+
+Veuillez trouver ci-joint l'avis TTR concernant la procédure numéro {{numero_procedure}} à l'encontre de {{monsieur_madame_ttr}} {{nom}} {{prenom}}, pour les faits de {{infractions_virgules}}, commis en date du {{date_faits}}.
+
+Je vous transmets également ci-joint la saisine, l'audition du mis en cause, ainsi que le relevé intégral du permis de conduire.
+
+En vous remerciant.
+
+Respectueusement,`,
+
+  infractions: {
+    csp: `---SUR LA CONDUITE SANS PERMIS---
+---QUESTION: "Etiez vous au courant que vous n'étiez pas titulaire du permis de conduire ?"---
+---REPONSE: ""---
+---QUESTION: "Pourquoi avoir pris le volant si vous n'aviez pas le droit de conduire ?"---
+---REPONSE: ""---
+---QUESTION: "Avez vous entamé des démarches pour passer le permis ?"---
+---REPONSE: ""---
+---QUESTION: "Est-ce que c'était la première fois que vous preniez le volant malgré l'impossibilité de conduire ?"---
+---REPONSE: ""---
+---QUESTION: " A qui appartient le véhicule que vous avez conduit ?"---
+---REPONSE: ""---`,
+    csusp: `---SUR LA CONDUITE MALGRE SUSPENSION DU PERMIS DE CONDUIRE---
+---QUESTION: "Etiez vous au courant que vous n'étiez plus en droit de conduire ?"---
+---REPONSE: ""---
+---QUESTION: "Pourquoi avoir pris le volant si vous n'aviez pas le droit de conduire ?"---
+---REPONSE: ""---
+---QUESTION: "Jusqu'à quand votre permis est suspendu ?"---
+---REPONSE: ""---
+---QUESTION: "Est-ce que c'était la première fois que vous preniez le volant malgré l'impossibilité de conduire ?"---
+---REPONSE: ""---
+---QUESTION: " A qui appartient le véhicule que vous avez conduit ?"---
+---REPONSE: ""---`,
+    cannul: `---SUR LA CONDUITE MALGRE ANNULATION DU PERMIS DE CONDUIRE---
+---QUESTION: "Etiez vous au courant que vous n'étiez plus en droit de conduire ?"---
+---REPONSE: ""---
+---QUESTION: "Pourquoi avoir pris le volant si vous n'aviez pas le droit de conduire ?"---
+---REPONSE: ""---
+---QUESTION: "Jusqu'à quand votre permis est annulé ?"---
+---REPONSE: ""---
+---QUESTION: "Est-ce que c'était la première fois que vous preniez le volant malgré l'impossibilité de conduire ?"---
+---REPONSE: ""---
+---QUESTION: " A qui appartient le véhicule que vous avez conduit ?"---
+---REPONSE: ""---`,
+    assurance: `---SUR LA CONDUITE SANS ASSURANCE---
+---QUESTION: "Vous avez été contrôlé alors que le véhicule que vous conduisiez n'était pas assuré, comment l'expliquez vous ?"---
+---REPONSE: ""---
+---QUESTION: "Etait-ce la première fois que vous conduisiez sans assurance ?"---
+---REPONSE: ""---
+---QUESTION: "Avez vous depuis assuré le véhicule ou entammé des démarches afin de l'assurer ?"---
+---REPONSE: ""---`,
+    stups: `---SUR LE RAPPORT DU SNPS DE MARSEILLE:---
+---Je prends acte qu'un prélèvement salivaire a été effectué sur ma personne le jour des faits et que ce dit prélèvement a été envoyé au SNPS de Marseille afin de vérifier la présence ou non de produits stupéfiants dans ma salive.---
+---Je n'ai pas consenti a effectuer de contre expertise,---
+---Je prends acte que vous me présentez le rapport et que ce rapport révèle la présence de produits stupéfiants à savoir un résultat positif pour le {{snps_positifs}}, autrement dit {{snps_familles}}.---
+---QUESTION: Qu'avez vous à dire concernant ce résultat?---
+---REPONSE:""---
+---SUR LA CONDUITE SOUS L'EMPRISE DE PRODUITS STUPEFIANTS:---
+---QUESTION : «Etiez vous conscient de votre état sous l’emprise de produits stupéfiants? »---
+---REPONSE : « ». ---
+---QUESTION : « Qu’avez vous consommé avant de vous faire interpeller et en quelle quantité? »---
+---REPONSE : « ». ---
+---QUESTION : « Etes vous consommateur régulier de produits stupéfiants et en quelle quantité ? »---
+---REPONSE : « ». ---
+---QUESTION: "Quand avez-vous commencé à fumer des produits stupéfiants et que consommez-vous? herbes de cannabis, resinede cannabis, autre ?"---
+---REPONSE:""---
+---QUESTION: " Est-ce que vous consommez d'autre type de produits stupéfiants ?"---
+---REPONSE: ""---
+---QUESTION : « Qu’elle somme d’argent  consacrez-vous à l’acquisition  de produits stupéfiants ? »---
+---REPONSE : « ». ---
+---QUESTION : « Suivez-vous ou envisagez-vous de suivre un traitement pour arrêter de consommer des produits stupéfiants ? »---
+---REPONSE : « ». ---
+---QUESTION: "Etes-vous déjà connu pour des faits similaires ou assimilées? Si oui, quelle a été la ou les décision·s prise·s par le procureur de la république ?"---
+---REPONSE: ""---`,
+    usage_stups: `---SUR L'USAGE DE PRODUIT STUPEFIANTS:---
+---Lors de votre invitation à suivre des policiers, vous aviez sur vous un {{contenant_stups}} contenant {{matiere_stups}} {{quantite_stups}}---
+---Un test et une pesée contradictoire a été effectué en votre présence, révélant un poids total de {{quantite_stups}} grammes.---
+---"Je prends acte que lors du test le résultat a dévoilé la présence de produits stupéfiants, à savoir {{matiere_stups}}"---
+---Représentons l'objet appréhendé par l'équipage interpellateur à {{monsieur_madame}} {{nom}}---
+---QUESTION: "Reconnaissez vous cet objet et vous appartient-il ?"---
+---REPONSE: ""---
+---QUESTION: "Pourquoi étiez vous en possession de {{matiere_stups}}---
+---REPONSE: ""---
+---QUESTION: "Consentez vous à la destruction de la matière si le magistrat nous en donne l'instruction ?"---
+---REPONSE: ""---`,
+    alcool: `---SUR LA CONDUITE SOUS L'EMPIRE D'UN ETAT ALCOOLIQUE:---
+---QUESTION: "Vous avez été contrôlé le {{date_faits}} et dépisté positif à l'alcool. Par la suite la vérification du taux d'alcoolémie à fait état d'un taux de {{taux_alcool}}mg/l d'aire expiré. Qu'aez vous à dire à ce propos ?"---
+---REPONSE: ""---
+---QUESTION: "Qu'aviez vous consommé et à quel moment ?"---
+---REPONSE: ""---
+---QUESTION: "Consommez vous de l'alcool régulièrement et êtes vous suivi médicalement pour ça ?"---
+---REPONSE: ""---
+---QUESTION: "Etes vous déjà connu pour des faits similaires et si oui quelle a été la décision du tribunal ?"---
+---REPONSE: ""---`,
+    refus: `---SUR LE REFUS D'OBTEMPERER:---
+---QUESTION: "Vous avez été interpellé à la suite d'un refus d'obtempérer commis le {{date_faits}} à {{heure_faits}} à {{adresse_faits}}, pouvez vous m'expliquer ce qui s'est passé ?"---
+---REPONSE: ""---
+---QUESTION: "Pourquoi ne pas vous être arrêté ?"---
+---REPONSE: ""---
+---QUESTION: "A qui appartient le véhicule que vous conduisiez ?"---
+---REPONSE: ""---
+---QUESTION: "Avez vous conscience d'avoir mis des gens en danger ainsi que vous en faisant ce refus d'obtempérer ?"---
+---REPONSE: ""---`
+  }
+};
+
+function $(id) { return document.getElementById(id); }
+
+function init() {
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => showPage(btn.dataset.page));
+  });
+
+  const factsBox = $("factsBox");
+  FACTS.forEach(f => {
+    const div = document.createElement("label");
+    div.className = "checkline";
+    div.innerHTML = `<input type="checkbox" id="fact_${f.id}" onchange="refreshAuditionFacts(); toggleUsageStupsDetails(); toggleCepsDetails(); toggleAlcoolDetails();"><span>${f.label}</span>`;
+    factsBox.appendChild(div);
+  });
+
+  loadTemplates();
+  renderInfractionTemplates();
+  refreshAuditionFacts();
+  toggleUsageStupsDetails();
+  toggleCepsDetails();
+  toggleSuspensionAdministrativeDetails();
+  toggleAlcoolDetails();
+
+  document.querySelectorAll("input, textarea, select").forEach(el => {
+    el.addEventListener("input", () => {
+      if (document.querySelector("#droits.active")) generateDroits();
+      if (document.querySelector("#audition.active")) generateAudition();
+      if (document.querySelector("#ttr.active")) generateTtr();
+    });
+  });
+}
+
+function showPage(pageId) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.page === pageId));
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === pageId));
+  refreshAuditionFacts();
+  if (pageId === "droits") generateDroits();
+  if (pageId === "audition") generateAudition();
+  if (pageId === "ttr") generateTtr();
+}
+
+function selectedFacts() {
+  return FACTS.filter(f => $("fact_" + f.id)?.checked);
+}
+
+function selectedAuditionFacts() {
+  return selectedFacts().filter(f => $("hear_" + f.id)?.checked);
+}
+
+function toggleUsageStupsDetails() {
+  const box = $("usageStupsDetails");
+  const checked = $("fact_usage_stups")?.checked;
+  if (box) box.style.display = checked ? "block" : "none";
+}
+
+function toggleCepsDetails() {
+  const box = $("cepsDetails");
+  const checked = $("fact_stups")?.checked;
+  if (box) box.style.display = checked ? "block" : "none";
+}
+
+function toggleSuspensionAdministrativeDetails() {
+  const box = $("suspensionAdministrativeDetails");
+  const checked = $("suspensionAdministrative")?.checked;
+  if (box) box.style.display = checked ? "block" : "none";
+}
+
+function toggleAlcoolDetails() {
+  const box = $("alcoolDetails");
+  const checked = $("fact_alcool")?.checked;
+  if (box) box.style.display = checked ? "block" : "none";
+}
+
+function addMonthsToToday(months) {
+  const d = new Date();
+  const day = d.getDate();
+  d.setMonth(d.getMonth() + Number(months || 0));
+  if (d.getDate() !== day) d.setDate(0);
+  return d.toLocaleDateString("fr-FR");
+}
+
+function todayFr() {
+  return new Date().toLocaleDateString("fr-FR");
+}
+
+function getCheckedSnpsValues() {
+  return Array.from(document.querySelectorAll(".snps:checked")).map(el => el.value);
+}
+
+function getCheckedSnpsFamilies() {
+  const familles = Array.from(document.querySelectorAll(".snps:checked")).map(el => el.dataset.famille);
+  return [...new Set(familles)];
+}
+
+function joinFrench(items) {
+  if (!items || items.length === 0) return "";
+  if (items.length === 1) return items[0];
+  return items.slice(0, -1).join(", ") + " et " + items[items.length - 1];
+}
+
+function refreshAuditionFacts() {
+  const box = $("auditionFacts");
+  if (!box) return;
+  const selected = selectedFacts();
+  if (selected.length === 0) {
+    box.innerHTML = `<p class="muted">Aucun fait coché dans la page de saisie.</p>`;
+    return;
+  }
+
+  const previous = {};
+  selected.forEach(f => {
+    const old = $("hear_" + f.id);
+    previous[f.id] = old ? old.checked : true;
+  });
+
+  box.innerHTML = "";
+  selected.forEach(f => {
+    const div = document.createElement("label");
+    div.className = "checkline";
+    div.innerHTML = `<input type="checkbox" id="hear_${f.id}" ${previous[f.id] ? "checked" : ""} onchange="generateAudition()"><span>Entendre sur : ${f.label}</span>`;
+    box.appendChild(div);
+  });
+}
+
+function formatDate(value) {
+  if (!value) return "[date à compléter]";
+  const [y,m,d] = value.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+
+
+function getDataNoBlocks() {
+  const facts = selectedFacts();
+  const auditionFacts = selectedAuditionFacts();
+
+  const nom = $("nom").value.trim().toUpperCase() || "[NOM]";
+  const prenom = $("prenom").value.trim() || "[Prénom]";
+  const dateNaissance = formatDate($("dateNaissance").value);
+  const lieuNaissance = $("lieuNaissance").value.trim() || "[lieu de naissance]";
+  const adresseMec = $("adresseMec").value.trim() || "[adresse du mis en cause]";
+  const sexe = $("sexe")?.value || "M";
+  const feminin = sexe === "F";
+
+  return {
+    numero_procedure: $("numeroProcedure")?.value.trim() || "[numéro de procédure]",
+    date_faits: formatDate($("dateFaits").value),
+    heure_faits: $("heureFaits").value || "[heure]",
+    adresse_faits: $("adresseFaits").value.trim() || "[adresse des faits]",
+    ville_faits: $("villeFaits").value.trim() || "[ville et arrondissement si nécessaire]",
+    matiere_stups: $("matiereStups")?.value || "[matière stupéfiante]",
+    contenant_stups: $("contenantStups")?.value || "[contenant]",
+    quantite_stups: $("quantiteStups")?.value.trim() || "[quantité]",
+    taux_alcool: $("tauxAlcool")?.value.trim() || "[TAUX]",
+    snps_positifs: joinFrench(getCheckedSnpsValues()) || "[résultat SNPS positif]",
+    snps_familles: joinFrench(getCheckedSnpsFamilies()) || "[famille de produits stupéfiants]",
+    suspension_administrative: $("suspensionAdministrative")?.checked ? "oui" : "non",
+    mois_suspension_administrative: $("moisSuspensionAdministrative")?.value || "[nombre de mois]",
+    date_jour: todayFr(),
+    date_fin_suspension_administrative: $("moisSuspensionAdministrative")?.value ? addMonthsToToday($("moisSuspensionAdministrative").value) : "[date de fin de suspension]",
+    service: $("service").value.trim() || "[service]",
+    nom,
+    prenom,
+    sexe_libelle: feminin ? "Féminin" : "Masculin",
+    monsieur_madame_ttr: feminin ? "Madame" : "Monsieur",
+    date_naissance: dateNaissance,
+    lieu_naissance: lieuNaissance,
+    adresse_mec: adresseMec,
+    identite_complete: `${prenom} ${nom}, né(e) le ${dateNaissance} à ${lieuNaissance}, demeurant ${adresseMec}.`,
+    faits_liste: facts.length ? facts.map(f => `- ${f.label}`).join("\n") : "[faits à sélectionner]",
+    infractions_virgules: facts.length ? facts.map(f => f.label).join(", ") : "[infractions cochées]",
+    faits_audition: auditionFacts.length ? auditionFacts.map(f => `- ${f.label}`).join("\n") : "[faits d'audition à sélectionner]",
+    faits_audition_virgules: auditionFacts.length ? auditionFacts.map(f => f.label).join(", ") : "[faits cochés]",
+    date_audition: formatDate($("dateAudition").value),
+    heure_audition: $("heureAudition").value || "[heure audition]",
+    heure_signature: new Date().toLocaleTimeString("fr-FR", {hour: "2-digit", minute: "2-digit"}),
+    lieu_audition: $("lieuAudition").value.trim() || "[lieu audition]",
+    observations: $("observations").value.trim() || "[observations à compléter]",
+    dest_ttr: $("destTtr")?.value.trim() || "[destinataire TTR]",
+    objet_ttr: $("objetTtr")?.value.trim() || "Avis TTR - délits routiers",
+    accord_e: feminin ? "e" : "",
+    lui_elle_meme: feminin ? "elle-même" : "lui-même",
+    monsieur_madame: feminin ? "MADAME" : "MONSIEUR"
+  };
+}
+
+function getData() {
+  const data = getDataNoBlocks();
+  data.blocs_audition = buildInfractionBlocks();
+  data.bloc_fin_audition = applyTemplate(DEFAULT_TEMPLATES.fin_audition, data);
+  return data;
+}
+
+function buildInfractionBlocks() {
+  const facts = selectedAuditionFacts();
+  if (!facts.length) return "[aucun bloc infraction sélectionné pour l'audition]";
+  const data = getDataNoBlocks();
+  const blocks = facts.map(f => {
+    const el = $("tpl_inf_" + f.id);
+    const raw = el ? el.value : DEFAULT_TEMPLATES.infractions[f.id];
+    return applyTemplate(raw, data);
+  });
+
+  if ($("suspensionAdministrative")?.checked) {
+    blocks.push(applyTemplate(DEFAULT_TEMPLATES.suspension_administrative, data));
+  }
+
+  return blocks.join("\n\n");
+}
+
+function applyTemplate(tpl, data) {
+  return tpl.replace(/\{\{(.*?)\}\}/g, (_, key) => {
+    const clean = key.trim();
+    return data[clean] ?? `{{${clean}}}`;
+  });
+}
+
+function generateDroits() {
+  $("resumeDroits").innerHTML = selectedFacts().map(f => `<span class="pill">${f.label}</span>`).join("") || `<p class="muted">Aucun fait sélectionné.</p>`;
+  $("outDroits").textContent = applyTemplate($("tplDroits").value, getData());
+}
+
+function generateAudition() {
+  $("outAudition").textContent = applyTemplate($("tplAudition").value, getData());
+}
+
+function generateTtr() {
+  $("outTtr").textContent = applyTemplate($("tplTtr").value, getData());
+}
+
+async function copyText(id) {
+  const text = $(id).textContent;
+  await navigator.clipboard.writeText(text);
+  alert("Texte copié.");
+}
+
+function downloadTxt(id, filename) {
+  const blob = new Blob([$(id).textContent], {type: "text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function saveCase() {
+  const fields = {};
+  document.querySelectorAll("input, textarea, select").forEach(el => {
+    if (el.id && !el.id.startsWith("tpl")) fields[el.id] = el.type === "checkbox" ? el.checked : el.value;
+  });
+  localStorage.setItem("badr_case", JSON.stringify(fields));
+  alert("Procédure sauvegardée localement.");
+}
+
+function loadCase() {
+  const raw = localStorage.getItem("badr_case");
+  if (!raw) return alert("Aucune procédure sauvegardée.");
+  const fields = JSON.parse(raw);
+  Object.entries(fields).forEach(([id, value]) => {
+    const el = $(id);
+    if (!el) return;
+    if (el.type === "checkbox") el.checked = value;
+    else el.value = value;
+  });
+  refreshAuditionFacts();
+  toggleUsageStupsDetails();
+  toggleCepsDetails();
+  toggleSuspensionAdministrativeDetails();
+  toggleAlcoolDetails();
+  alert("Procédure chargée.");
+}
+
+function resetAll() {
+  if (!confirm("Réinitialiser la procédure en cours ?")) return;
+  document.querySelectorAll("input, textarea, select").forEach(el => {
+    if (el.id && !el.id.startsWith("tpl")) {
+      if (el.type === "checkbox") el.checked = false;
+      else el.value = "";
+    }
+  });
+  refreshAuditionFacts();
+  toggleUsageStupsDetails();
+  toggleCepsDetails();
+  toggleSuspensionAdministrativeDetails();
+  toggleAlcoolDetails();
+  generateDroits();
+  generateAudition();
+  generateTtr();
+}
+
+function saveTemplates() {
+  const templates = {
+    droits: $("tplDroits").value,
+    audition: $("tplAudition").value,
+    ttr: $("tplTtr").value,
+    infractions: {}
+  };
+  FACTS.forEach(f => {
+    templates.infractions[f.id] = $("tpl_inf_" + f.id).value;
+  });
+  localStorage.setItem("badr_templates_v14", JSON.stringify(templates));
+  alert("Modèles sauvegardés.");
+}
+
+function loadTemplates() {
+  const saved = localStorage.getItem("badr_templates_v14");
+  const templates = saved ? JSON.parse(saved) : DEFAULT_TEMPLATES;
+  $("tplDroits").value = templates.droits || DEFAULT_TEMPLATES.droits;
+  $("tplAudition").value = templates.audition || DEFAULT_TEMPLATES.audition;
+  $("tplTtr").value = templates.ttr || DEFAULT_TEMPLATES.ttr;
+}
+
+function renderInfractionTemplates() {
+  const saved = localStorage.getItem("badr_templates_v14");
+  const templates = saved ? JSON.parse(saved) : DEFAULT_TEMPLATES;
+  const box = $("infractionTemplates");
+  box.innerHTML = "";
+  FACTS.forEach(f => {
+    const wrapper = document.createElement("div");
+    wrapper.style.marginTop = "12px";
+    wrapper.innerHTML = `
+      <label>${f.label}</label>
+      <textarea id="tpl_inf_${f.id}" class="template-box">${(templates.infractions?.[f.id] || DEFAULT_TEMPLATES.infractions[f.id]).replace(/</g, "&lt;")}</textarea>
+    `;
+    box.appendChild(wrapper);
+  });
+}
+
+function restoreDefaultTemplates() {
+  if (!confirm("Restaurer les modèles provisoires ? Tes modèles sauvegardés seront remplacés.")) return;
+  localStorage.setItem("badr_templates_v14", JSON.stringify(DEFAULT_TEMPLATES));
+  loadTemplates();
+  renderInfractionTemplates();
+  alert("Modèles provisoires restaurés.");
+}
+
+init();
+</script>
+</body>
+</html>
